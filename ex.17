@@ -1,0 +1,111 @@
+<?php
+
+function limparTexto($texto) {
+    return preg_replace('/\s+/', ' ', trim($texto));
+}
+
+function separarPalavras($texto) {
+    $texto = limparTexto($texto);
+    return preg_split('/\s+/', $texto);
+}
+
+function contarCaracteres($texto) {
+    return strlen($texto);
+}
+
+function contarPalavras($texto) {
+    return count(separarPalavras($texto));
+}
+
+function contarFrases($texto) {
+    $frases = preg_split('/[.!?]+/', trim($texto));
+    $frases = array_filter($frases);
+
+    return count($frases);
+}
+
+function encontrarMaiorPalavra($palavras) {
+    $maior = $palavras[0];
+
+    foreach ($palavras as $palavra) {
+        if (strlen($palavra) > strlen($maior)) {
+            $maior = $palavra;
+        }
+    }
+
+    return $maior;
+}
+
+function encontrarMenorPalavra($palavras) {
+    $menor = $palavras[0];
+
+    foreach ($palavras as $palavra) {
+        if (strlen($palavra) < strlen($menor)) {
+            $menor = $palavra;
+        }
+    }
+
+    return $menor;
+}
+
+function contarPalavrasRepetidas($palavras) {
+    $contagem = array_count_values(array_map("strtolower", $palavras));
+    $repetidas = 0;
+
+    foreach ($contagem as $quantidade) {
+        if ($quantidade > 1) {
+            $repetidas += $quantidade;
+        }
+    }
+
+    return $repetidas;
+}
+
+function palavrasMaisFrequentes($palavras) {
+    $contagem = array_count_values(array_map("strtolower", $palavras));
+    arsort($contagem);
+
+    return array_slice($contagem, 0, 5, true);
+}
+
+function formatarTexto($texto) {
+    return ucwords(strtolower(limparTexto($texto)));
+}
+
+function processarTexto($texto) {
+    $palavras = separarPalavras($texto);
+
+    return [
+        "caracteres" => contarCaracteres($texto),
+        "palavras" => contarPalavras($texto),
+        "frases" => contarFrases($texto),
+        "maior_palavra" => encontrarMaiorPalavra($palavras),
+        "menor_palavra" => encontrarMenorPalavra($palavras),
+        "palavras_repetidas" => contarPalavrasRepetidas($palavras),
+        "mais_frequentes" => palavrasMaisFrequentes($palavras),
+        "texto_sem_espacos_duplicados" => limparTexto($texto),
+        "texto_formatado" => formatarTexto($texto)
+    ];
+}
+
+$texto = "php é muito legal. php é fácil de aprender. programação em php é legal.";
+
+$resultado = processarTexto($texto);
+
+echo "quantidade de caracteres: " . $resultado["caracteres"] . "<br>";
+echo "quantidade de palavras: " . $resultado["palavras"] . "<br>";
+echo "quantidade de frases: " . $resultado["frases"] . "<br>";
+echo "palavra mais longa: " . $resultado["maior_palavra"] . "<br>";
+echo "palavra mais curta: " . $resultado["menor_palavra"] . "<br>";
+echo "quantidade de palavras repetidas: " . $resultado["palavras_repetidas"] . "<br>";
+
+echo "cinco palavras mais frequentes:<br>";
+
+foreach ($resultado["mais_frequentes"] as $palavra => $quantidade) {
+    echo $palavra . ": " . $quantidade . "<br>";
+}
+
+echo "texto sem espaços duplicados: " . $resultado["texto_sem_espacos_duplicados"] . "<br>";
+echo "texto formatado: " . $resultado["texto_formatado"];
+
+?>
